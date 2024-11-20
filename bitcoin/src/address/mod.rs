@@ -242,7 +242,7 @@ impl KnownHrp {
 
         match network {
             Bitcoin => Self::Mainnet,
-            Testnet(_) | Signet => Self::Testnets,
+            Testnet(_) | Signet | CPUNet => Self::Testnets,
             Regtest => Self::Regtest,
         }
     }

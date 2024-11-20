@@ -57,7 +57,7 @@ impl From<Network> for NetworkKind {
 
         match n {
             Bitcoin => NetworkKind::Main,
-            Testnet(_) | Signet | Regtest => NetworkKind::Test,
+            Testnet(_) | Signet | Regtest | CPUNet => NetworkKind::Test,
         }
     }
 }
@@ -84,6 +84,8 @@ pub enum Network {
     Signet,
     /// Bitcoin's regtest network.
     Regtest,
+    /// Bitcoin's cpunet network.
+    CPUNet,
 }
 
 #[cfg(feature = "serde")]
@@ -168,6 +170,7 @@ impl Network {
             Network::Testnet(TestnetVersion::V4) => "testnet4",
             Network::Signet => "signet",
             Network::Regtest => "regtest",
+            Network::CPUNet => "cpunet",
         }
     }
 
@@ -189,6 +192,7 @@ impl Network {
             "testnet4" => Testnet(TestnetVersion::V4),
             "signet" => Signet,
             "regtest" => Regtest,
+            "cpunet" => CPUNet,
             _ => return Err(ParseNetworkError(core_arg.to_owned())),
         };
         Ok(network)
@@ -229,6 +233,7 @@ impl Network {
             Network::Testnet(TestnetVersion::V4) => &Params::TESTNET4,
             Network::Signet => &Params::SIGNET,
             Network::Regtest => &Params::REGTEST,
+            Network::CPUNet => &Params::CPUNET,
         }
     }
 
@@ -241,6 +246,7 @@ impl Network {
             Network::Testnet(TestnetVersion::V4) => "testnet4",
             Network::Signet => "signet",
             Network::Regtest => "regtest",
+            Network::CPUNet => "cpunet",
         }
     }
 }
@@ -317,6 +323,7 @@ impl FromStr for Network {
             "testnet4" => Ok(Network::Testnet(TestnetVersion::V4)),
             "signet" => Ok(Network::Signet),
             "regtest" => Ok(Network::Regtest),
+            "cpunet" => Ok(Network::CPUNet),
             _ => Err(ParseNetworkError(s.to_owned())),
         }
     }
@@ -355,6 +362,7 @@ impl TryFrom<ChainHash> for Network {
             ChainHash::TESTNET4 => Ok(Network::Testnet(TestnetVersion::V4)),
             ChainHash::SIGNET => Ok(Network::Signet),
             ChainHash::REGTEST => Ok(Network::Regtest),
+            ChainHash::CPUNET => Ok(Network::CPUNet),
             _ => Err(UnknownChainHashError(chain_hash)),
         }
     }
@@ -391,6 +399,7 @@ mod tests {
         );
         assert_eq!(deserialize(&[0x0a, 0x03, 0xcf, 0x40]).ok(), Some(Network::Signet.magic()));
         assert_eq!(deserialize(&[0xfa, 0xbf, 0xb5, 0xda]).ok(), Some(Network::Regtest.magic()));
+        assert_eq!(deserialize(&[0x63, 0x70, 0x75, 0x6e]).ok(), Some(Network::CPUNet.magic()));
     }
 
     #[test]
@@ -400,12 +409,14 @@ mod tests {
         assert_eq!(Network::Testnet(TestnetVersion::V4).to_string(), "testnet4");
         assert_eq!(Network::Regtest.to_string(), "regtest");
         assert_eq!(Network::Signet.to_string(), "signet");
+        assert_eq!(Network::CPUNet.to_string(), "cpunet");
 
         assert_eq!("bitcoin".parse::<Network>().unwrap(), Network::Bitcoin);
         assert_eq!("testnet".parse::<Network>().unwrap(), Network::Testnet(TestnetVersion::V3));
         assert_eq!("testnet4".parse::<Network>().unwrap(), Network::Testnet(TestnetVersion::V4));
         assert_eq!("regtest".parse::<Network>().unwrap(), Network::Regtest);
         assert_eq!("signet".parse::<Network>().unwrap(), Network::Signet);
+        assert_eq!("cpunet".parse::<Network>().unwrap(), Network::CPUNet);
         assert!("fakenet".parse::<Network>().is_err());
     }
 
@@ -460,6 +471,7 @@ mod tests {
             (Testnet(TestnetVersion::V4), "testnet4"),
             (Signet, "signet"),
             (Regtest, "regtest"),
+            (CPUNet, "cpunet"),
         ];
 
         for tc in tests {
@@ -482,6 +494,7 @@ mod tests {
             (Network::Testnet(TestnetVersion::V4), "testnet4"),
             (Network::Regtest, "regtest"),
             (Network::Signet, "signet"),
+            (Network::CPUNet, "cpunet"),
         ];
 
         for (net, core_arg) in &expected_pairs {
