@@ -139,6 +139,8 @@ pub static TESTNET4: Params = Params::TESTNET4;
 pub static SIGNET: Params = Params::SIGNET;
 /// The regtest parameters.
 pub static REGTEST: Params = Params::REGTEST;
+/// The cpunet parameters.
+pub static CPUNET: Params = Params::CPUNET;
 
 #[allow(deprecated)] // For `pow_limit`.
 impl Params {
@@ -248,6 +250,23 @@ impl Params {
         no_pow_retargeting: true,
     };
 
+    /// The cpunet parameters.
+    pub const CPUNET: Params = Params {
+        network: Network::CPUNet,
+        bip16_time: 1333238400, // Apr 1 2012
+        bip34_height: 1,
+        bip65_height: 1,
+        bip66_height: 1,
+        rule_change_activation_threshold: 1512, // 75%
+        miner_confirmation_window: 2016,
+        pow_limit: Target::MAX_ATTAINABLE_MAINNET,
+        max_attainable_target: Target::MAX_ATTAINABLE_MAINNET,
+        pow_target_spacing: 10 * 60,            // 10 minutes.
+        pow_target_timespan: 14 * 24 * 60 * 60, // 2 weeks.
+        allow_min_difficulty_blocks: false,
+        no_pow_retargeting: false,
+    };
+
     /// Creates parameters set for the given network.
     pub const fn new(network: Network) -> Self {
         match network {
@@ -256,6 +275,7 @@ impl Params {
             Network::Testnet(TestnetVersion::V4) => Params::TESTNET4,
             Network::Signet => Params::SIGNET,
             Network::Regtest => Params::REGTEST,
+            Network::CPUNet => Params::CPUNET,
         }
     }
 
