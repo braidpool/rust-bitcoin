@@ -82,7 +82,8 @@ fn bitcoin_genesis_tx(params: &Params) -> Transaction {
 
     let (in_script, out_script) = {
         match params.network {
-            Network::Testnet4 => (
+            Network::Testnet4 |
+            Network::CPUNet => (
                 script::Builder::new()
                 .push_int(486604799)
                 .push_int_non_minimal(4)
@@ -177,6 +178,17 @@ pub fn genesis_block(params: impl AsRef<Params>) -> Block {
             },
             txdata,
         },
+        Network::CPUNet => Block {
+            header: block::Header {
+                version: block::Version::ONE,
+                prev_blockhash: Hash::all_zeros(),
+                merkle_root,
+                time: 1723652721,
+                bits: CompactTarget::from_consensus(0x1d00ffff),
+                nonce: 961348305,
+            },
+            txdata,
+        },
     }
 }
 
@@ -219,6 +231,11 @@ impl ChainHash {
         6, 34, 110, 70, 17, 26, 11, 89, 202, 175, 18, 96, 67, 235, 91, 191, 40, 195, 79, 58, 94,
         51, 42, 31, 199, 178, 183, 60, 241, 136, 145, 15,
     ]);
+    /// `ChainHash` for cpunet bitcoin.
+    pub const CPUNET: Self = Self([
+        155, 244, 9, 169, 207, 188, 132, 171, 5, 153, 89, 228, 109, 99, 3, 243, 57, 98, 248, 5,
+        188, 141, 147, 51, 119, 165, 255, 187, 0, 0, 0, 0,
+    ]);
 
     /// Returns the hash of the `network` genesis block for use as a chain hash.
     ///
@@ -231,6 +248,7 @@ impl ChainHash {
             Network::Testnet4 => Self::TESTNET4,
             Network::Signet => Self::SIGNET,
             Network::Regtest => Self::REGTEST,
+            Network::CPUNet => Self::CPUNET,
         }
     }
 
@@ -245,6 +263,7 @@ impl ChainHash {
             Network::Testnet4 => Self::TESTNET4,
             Network::Signet => Self::SIGNET,
             Network::Regtest => Self::REGTEST,
+            Network::CPUNet => Self::CPUNET,
         }
     }
 
@@ -261,8 +280,8 @@ mod test {
     use hex::test_hex_unwrap as hex;
 
     use super::*;
-    use crate::consensus::params;
     use crate::consensus::encode::serialize;
+    use crate::consensus::params;
 
     #[test]
     fn bitcoin_genesis_first_transaction() {
@@ -380,6 +399,7 @@ mod test {
             Network::Testnet4 => {},
             Network::Signet => {},
             Network::Regtest => {},
+            Network::CPUNet => {},
             _ => panic!("Update ChainHash::using_genesis_block and chain_hash_genesis_block with new variants"),
         }
     }
@@ -401,6 +421,7 @@ mod test {
         testnet4_chain_hash_genesis_block, Network::Testnet4;
         signet_chain_hash_genesis_block, Network::Signet;
         regtest_chain_hash_genesis_block, Network::Regtest;
+        cpunet_chain_hash_genesis_block, Network::CPUNet;
     }
 
     // Test vector taken from: https://github.com/lightning/bolts/blob/master/00-introduction.md

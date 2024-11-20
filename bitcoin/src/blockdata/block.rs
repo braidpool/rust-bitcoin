@@ -83,6 +83,7 @@ impl Header {
     pub fn block_hash(&self) -> BlockHash {
         let mut engine = BlockHash::engine();
         self.consensus_encode(&mut engine).expect("engines don't error");
+        engine.input("cpunet\0".as_bytes());
         BlockHash::from_engine(engine)
     }
 
