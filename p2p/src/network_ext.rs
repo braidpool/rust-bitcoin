@@ -29,6 +29,7 @@ impl NetworkExt for Network {
             Self::Testnet(TestnetVersion::V3) => 18333,
             Self::Testnet(TestnetVersion::V4) => 48333,
             Self::Testnet(_) => 48333,
+            Self::CPUNet=>28333,
             Self::Regtest => 18444,
         }
     }
@@ -45,6 +46,7 @@ impl NetworkExt for Network {
             Self::Testnet(TestnetVersion::V4) => Magic::TESTNET4,
             Self::Testnet(_) => Magic::TESTNET4,
             Self::Regtest => Magic::REGTEST,
+            Self::CPUNet=>Magic::CPUNET
         }
     }
 }

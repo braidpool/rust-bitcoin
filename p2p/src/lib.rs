@@ -94,11 +94,15 @@ impl ProtocolVersion {
 
 impl ProtocolVersion {
     /// Constructs a protocol version that is not well-known.
-    pub fn from_nonstandard(version: u32) -> Self { Self(version) }
+    pub fn from_nonstandard(version: u32) -> Self {
+        Self(version)
+    }
 }
 
 impl From<ProtocolVersion> for u32 {
-    fn from(version: ProtocolVersion) -> Self { version.0 }
+    fn from(version: ProtocolVersion) -> Self {
+        version.0
+    }
 }
 
 impl Encodable for ProtocolVersion {
@@ -134,11 +138,15 @@ pub struct ProtocolVersionDecoder(encoding::ArrayDecoder<4>);
 
 impl ProtocolVersionDecoder {
     /// Constructs a new [`ProtocolVersion`] decoder.
-    pub const fn new() -> Self { Self(encoding::ArrayDecoder::new()) }
+    pub const fn new() -> Self {
+        Self(encoding::ArrayDecoder::new())
+    }
 }
 
 impl Default for ProtocolVersionDecoder {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl encoding::Decoder for ProtocolVersionDecoder {
@@ -157,12 +165,16 @@ impl encoding::Decoder for ProtocolVersionDecoder {
     }
 
     #[inline]
-    fn read_limit(&self) -> usize { self.0.read_limit() }
+    fn read_limit(&self) -> usize {
+        self.0.read_limit()
+    }
 }
 
 impl encoding::Decodable for ProtocolVersion {
     type Decoder = ProtocolVersionDecoder;
-    fn decoder() -> Self::Decoder { ProtocolVersionDecoder(encoding::ArrayDecoder::<4>::new()) }
+    fn decoder() -> Self::Decoder {
+        ProtocolVersionDecoder(encoding::ArrayDecoder::<4>::new())
+    }
 }
 
 /// An error consensus decoding an `ProtocolVersion`.
@@ -170,7 +182,9 @@ impl encoding::Decodable for ProtocolVersion {
 pub struct ProtocolVersionDecoderError(<encoding::ArrayDecoder<4> as encoding::Decoder>::Error);
 
 impl From<Infallible> for ProtocolVersionDecoderError {
-    fn from(never: Infallible) -> Self { match never {} }
+    fn from(never: Infallible) -> Self {
+        match never {}
+    }
 }
 
 impl fmt::Display for ProtocolVersionDecoderError {
@@ -181,7 +195,9 @@ impl fmt::Display for ProtocolVersionDecoderError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for ProtocolVersionDecoderError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.0) }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.0)
+    }
 }
 /// Flags to indicate which network services a node supports.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -244,20 +260,28 @@ impl ServiceFlags {
     }
 
     /// Checks whether [`ServiceFlags`] are included in this one.
-    pub fn has(self, flags: Self) -> bool { (self.0 | flags.0) == self.0 }
+    pub fn has(self, flags: Self) -> bool {
+        (self.0 | flags.0) == self.0
+    }
 
     /// Gets the integer representation of this [`ServiceFlags`].
-    pub fn to_u64(self) -> u64 { self.0 }
+    pub fn to_u64(self) -> u64 {
+        self.0
+    }
 }
 
 impl fmt::LowerHex for ServiceFlags {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(&self.0, f) }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::LowerHex::fmt(&self.0, f)
+    }
 }
 impl_to_hex_from_lower_hex!(ServiceFlags, |service_flags: &ServiceFlags| 16
     - service_flags.0.leading_zeros() as usize / 4);
 
 impl fmt::UpperHex for ServiceFlags {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::UpperHex::fmt(&self.0, f) }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::UpperHex::fmt(&self.0, f)
+    }
 }
 
 impl fmt::Display for ServiceFlags {
@@ -299,31 +323,43 @@ impl fmt::Display for ServiceFlags {
 }
 
 impl From<u64> for ServiceFlags {
-    fn from(f: u64) -> Self { Self(f) }
+    fn from(f: u64) -> Self {
+        Self(f)
+    }
 }
 
 impl From<ServiceFlags> for u64 {
-    fn from(flags: ServiceFlags) -> Self { flags.0 }
+    fn from(flags: ServiceFlags) -> Self {
+        flags.0
+    }
 }
 
 impl ops::BitOr for ServiceFlags {
     type Output = Self;
 
-    fn bitor(mut self, rhs: Self) -> Self { self.add(rhs) }
+    fn bitor(mut self, rhs: Self) -> Self {
+        self.add(rhs)
+    }
 }
 
 impl ops::BitOrAssign for ServiceFlags {
-    fn bitor_assign(&mut self, rhs: Self) { let _ = self.add(rhs); }
+    fn bitor_assign(&mut self, rhs: Self) {
+        let _ = self.add(rhs);
+    }
 }
 
 impl ops::BitXor for ServiceFlags {
     type Output = Self;
 
-    fn bitxor(mut self, rhs: Self) -> Self { self.remove(rhs) }
+    fn bitxor(mut self, rhs: Self) -> Self {
+        self.remove(rhs)
+    }
 }
 
 impl ops::BitXorAssign for ServiceFlags {
-    fn bitxor_assign(&mut self, rhs: Self) { let _ = self.remove(rhs); }
+    fn bitxor_assign(&mut self, rhs: Self) {
+        let _ = self.remove(rhs);
+    }
 }
 
 impl Encodable for ServiceFlags {
@@ -359,11 +395,15 @@ pub struct ServiceFlagsDecoder(encoding::ArrayDecoder<8>);
 
 impl ServiceFlagsDecoder {
     /// Constructs a new [`ServiceFlags`] decoder.
-    pub const fn new() -> Self { Self(encoding::ArrayDecoder::new()) }
+    pub const fn new() -> Self {
+        Self(encoding::ArrayDecoder::new())
+    }
 }
 
 impl Default for ServiceFlagsDecoder {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl encoding::Decoder for ServiceFlagsDecoder {
@@ -382,12 +422,16 @@ impl encoding::Decoder for ServiceFlagsDecoder {
     }
 
     #[inline]
-    fn read_limit(&self) -> usize { self.0.read_limit() }
+    fn read_limit(&self) -> usize {
+        self.0.read_limit()
+    }
 }
 
 impl encoding::Decodable for ServiceFlags {
     type Decoder = ServiceFlagsDecoder;
-    fn decoder() -> Self::Decoder { ServiceFlagsDecoder(encoding::ArrayDecoder::<8>::new()) }
+    fn decoder() -> Self::Decoder {
+        ServiceFlagsDecoder(encoding::ArrayDecoder::<8>::new())
+    }
 }
 
 /// An error consensus decoding an `ServiceFlags`.
@@ -395,7 +439,9 @@ impl encoding::Decodable for ServiceFlags {
 pub struct ServiceFlagsDecoderError(<encoding::ArrayDecoder<8> as encoding::Decoder>::Error);
 
 impl From<Infallible> for ServiceFlagsDecoderError {
-    fn from(never: Infallible) -> Self { match never {} }
+    fn from(never: Infallible) -> Self {
+        match never {}
+    }
 }
 
 impl fmt::Display for ServiceFlagsDecoderError {
@@ -406,7 +452,9 @@ impl fmt::Display for ServiceFlagsDecoderError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for ServiceFlagsDecoderError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.0) }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.0)
+    }
 }
 
 /// Network magic bytes to identify the cryptocurrency network the message was intended for.
@@ -424,12 +472,18 @@ impl Magic {
     pub const SIGNET: Self = Self([0x0A, 0x03, 0xCF, 0x40]);
     /// Bitcoin regtest network magic bytes.
     pub const REGTEST: Self = Self([0xFA, 0xBF, 0xB5, 0xDA]);
+    /// Bitcoin cpunet network magic bytes.
+    pub const CPUNET: Self = Self([0x63, 0x70, 0x75, 0x6E]);
 
     /// Constructs a new network magic from bytes.
-    pub const fn from_bytes(bytes: [u8; 4]) -> Self { Self(bytes) }
+    pub const fn from_bytes(bytes: [u8; 4]) -> Self {
+        Self(bytes)
+    }
 
     /// Gets network magic bytes.
-    pub fn to_bytes(self) -> [u8; 4] { self.0 }
+    pub fn to_bytes(self) -> [u8; 4] {
+        self.0
+    }
 }
 
 impl FromStr for Magic {
@@ -453,6 +507,7 @@ impl TryFrom<Network> for Magic {
             Network::Testnet(TestnetVersion::V4) => Ok(Self::TESTNET4),
             Network::Signet => Ok(Self::SIGNET),
             Network::Regtest => Ok(Self::REGTEST),
+            Network::CPUNet=>Ok(Self::CPUNET),
             Network::Testnet(_) => Err(UnknownNetworkError(network)),
         }
     }
@@ -481,7 +536,9 @@ impl fmt::Display for Magic {
 }
 
 impl fmt::Debug for Magic {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> { fmt::Display::fmt(self, f) }
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        fmt::Display::fmt(self, f)
+    }
 }
 
 impl fmt::LowerHex for Magic {
@@ -512,35 +569,51 @@ impl Decodable for Magic {
 }
 
 impl AsRef<[u8]> for Magic {
-    fn as_ref(&self) -> &[u8] { &self.0 }
+    fn as_ref(&self) -> &[u8] {
+        &self.0
+    }
 }
 
 impl AsRef<[u8; 4]> for Magic {
-    fn as_ref(&self) -> &[u8; 4] { &self.0 }
+    fn as_ref(&self) -> &[u8; 4] {
+        &self.0
+    }
 }
 
 impl AsMut<[u8]> for Magic {
-    fn as_mut(&mut self) -> &mut [u8] { &mut self.0 }
+    fn as_mut(&mut self) -> &mut [u8] {
+        &mut self.0
+    }
 }
 
 impl AsMut<[u8; 4]> for Magic {
-    fn as_mut(&mut self) -> &mut [u8; 4] { &mut self.0 }
+    fn as_mut(&mut self) -> &mut [u8; 4] {
+        &mut self.0
+    }
 }
 
 impl Borrow<[u8]> for Magic {
-    fn borrow(&self) -> &[u8] { &self.0 }
+    fn borrow(&self) -> &[u8] {
+        &self.0
+    }
 }
 
 impl Borrow<[u8; 4]> for Magic {
-    fn borrow(&self) -> &[u8; 4] { &self.0 }
+    fn borrow(&self) -> &[u8; 4] {
+        &self.0
+    }
 }
 
 impl BorrowMut<[u8]> for Magic {
-    fn borrow_mut(&mut self) -> &mut [u8] { &mut self.0 }
+    fn borrow_mut(&mut self) -> &mut [u8] {
+        &mut self.0
+    }
 }
 
 impl BorrowMut<[u8; 4]> for Magic {
-    fn borrow_mut(&mut self) -> &mut [u8; 4] { &mut self.0 }
+    fn borrow_mut(&mut self) -> &mut [u8; 4] {
+        &mut self.0
+    }
 }
 
 /// An error in parsing magic bytes.
@@ -561,7 +634,9 @@ impl fmt::Display for ParseMagicError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for ParseMagicError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.error) }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.error)
+    }
 }
 
 /// Error in creating a Network from Magic bytes.
@@ -577,7 +652,9 @@ impl fmt::Display for UnknownMagicError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for UnknownMagicError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
 }
 
 /// Error in creating a Magic from a Network.
@@ -593,22 +670,30 @@ impl fmt::Display for UnknownNetworkError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for UnknownNetworkError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
 }
 
 #[cfg(feature = "arbitrary")]
 impl<'a> Arbitrary<'a> for ProtocolVersion {
-    fn arbitrary(u: &mut Unstructured<'a>) -> arbitrary::Result<Self> { Ok(Self(u.arbitrary()?)) }
+    fn arbitrary(u: &mut Unstructured<'a>) -> arbitrary::Result<Self> {
+        Ok(Self(u.arbitrary()?))
+    }
 }
 
 #[cfg(feature = "arbitrary")]
 impl<'a> Arbitrary<'a> for ServiceFlags {
-    fn arbitrary(u: &mut Unstructured<'a>) -> arbitrary::Result<Self> { Ok(Self(u.arbitrary()?)) }
+    fn arbitrary(u: &mut Unstructured<'a>) -> arbitrary::Result<Self> {
+        Ok(Self(u.arbitrary()?))
+    }
 }
 
 #[cfg(feature = "arbitrary")]
 impl<'a> Arbitrary<'a> for Magic {
-    fn arbitrary(u: &mut Unstructured<'a>) -> arbitrary::Result<Self> { Ok(Self(u.arbitrary()?)) }
+    fn arbitrary(u: &mut Unstructured<'a>) -> arbitrary::Result<Self> {
+        Ok(Self(u.arbitrary()?))
+    }
 }
 
 #[cfg(test)]
@@ -712,6 +797,7 @@ mod tests {
             ("1c163f28", Network::Testnet(TestnetVersion::V4)),
             ("fabfb5da", Network::Regtest),
             ("0a03cf40", Network::Signet),
+            ("6370756e", Network::CPUNet),
         ];
 
         for (magic_str, network) in &known_network_magic_strs {

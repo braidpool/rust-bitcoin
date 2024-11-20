@@ -132,6 +132,8 @@ pub static TESTNET4: Params = Params::TESTNET4;
 pub static SIGNET: Params = Params::SIGNET;
 /// The regtest parameters.
 pub static REGTEST: Params = Params::REGTEST;
+/// The cpunet parameters.
+pub static CPUNET: Params = Params::CPUNET;
 
 #[allow(deprecated)] // For `pow_limit`.
 impl Params {
@@ -247,6 +249,24 @@ impl Params {
         no_pow_retargeting: true,
     };
 
+    /// The cpunet parameters.
+    pub const CPUNET: Params = Self {
+        network: Network::CPUNet,
+        bip16_time: 1333238400, // Apr 1 2012
+        bip34_height: BlockHeight::from_u32(1),
+        bip65_height: BlockHeight::from_u32(1),
+        bip66_height: BlockHeight::from_u32(1),
+        enforce_bip94:false,
+        rule_change_activation_threshold: BlockHeightInterval::from_u32(1512), // 75%
+        miner_confirmation_window: BlockHeightInterval::from_u32(2016),
+        pow_limit: Target::MAX_ATTAINABLE_MAINNET,
+        max_attainable_target: Target::MAX_ATTAINABLE_MAINNET,
+        pow_target_spacing: 10 * 60,            // 10 minutes.
+        pow_target_timespan: 14 * 24 * 60 * 60, // 2 weeks.
+        allow_min_difficulty_blocks: false,
+        no_pow_retargeting: false,
+    };
+
     /// Constructs parameters set for the given network.
     pub const fn new(network: Network) -> Self {
         match network {
@@ -256,6 +276,7 @@ impl Params {
             Network::Testnet(_) => Self::TESTNET3,
             Network::Signet => Self::SIGNET,
             Network::Regtest => Self::REGTEST,
+            Network::CPUNet => Params::CPUNET,
         }
     }
 
@@ -266,25 +287,37 @@ impl Params {
 }
 
 impl From<Network> for Params {
-    fn from(value: Network) -> Self { Self::new(value) }
+    fn from(value: Network) -> Self {
+        Self::new(value)
+    }
 }
 
 impl From<&Network> for Params {
-    fn from(value: &Network) -> Self { Self::new(*value) }
+    fn from(value: &Network) -> Self {
+        Self::new(*value)
+    }
 }
 
 impl From<Network> for &'static Params {
-    fn from(value: Network) -> Self { value.params() }
+    fn from(value: Network) -> Self {
+        value.params()
+    }
 }
 
 impl From<&Network> for &'static Params {
-    fn from(value: &Network) -> Self { value.params() }
+    fn from(value: &Network) -> Self {
+        value.params()
+    }
 }
 
 impl AsRef<Self> for Params {
-    fn as_ref(&self) -> &Self { self }
+    fn as_ref(&self) -> &Self {
+        self
+    }
 }
 
 impl AsRef<Params> for Network {
-    fn as_ref(&self) -> &Params { Self::params(*self) }
+    fn as_ref(&self) -> &Params {
+        Self::params(*self)
+    }
 }

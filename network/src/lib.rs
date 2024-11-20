@@ -37,14 +37,18 @@ pub enum NetworkKind {
 
 impl NetworkKind {
     /// Returns true if this is real mainnet bitcoin.
-    pub const fn is_mainnet(self) -> bool { matches!(self, Self::Main) }
+    pub const fn is_mainnet(self) -> bool {
+        matches!(self, Self::Main)
+    }
 }
 
 impl From<Network> for NetworkKind {
     fn from(network: Network) -> Self {
         match network {
             Network::Bitcoin => Self::Main,
-            Network::Testnet(_) | Network::Signet | Network::Regtest => Self::Test,
+            Network::Testnet(_) | Network::Signet | Network::Regtest | Network::CPUNet => {
+                Self::Test
+            }
         }
     }
 }
@@ -69,6 +73,8 @@ pub enum Network {
     Signet,
     /// Bitcoin's regtest network.
     Regtest,
+    /// Bitcoin's cpunet network.
+    CPUNet,
 }
 
 /// The testnet version to act on.
@@ -136,6 +142,7 @@ impl Network {
             Self::Testnet(TestnetVersion::V4) => "testnet4",
             Self::Signet => "signet",
             Self::Regtest => "regtest",
+            Self::CPUNet => "cpunet",
         }
     }
 
@@ -164,6 +171,7 @@ impl Network {
             "testnet4" => Self::Testnet(TestnetVersion::V4),
             "signet" => Self::Signet,
             "regtest" => Self::Regtest,
+            "cpunet" => Self::CPUNet,
             _ => return Err(ParseNetworkError(InputString::from(core_arg))),
         };
         Ok(network)
@@ -178,6 +186,7 @@ impl Network {
             Self::Testnet(TestnetVersion::V4) => "testnet4",
             Self::Signet => "signet",
             Self::Regtest => "regtest",
+            Self::CPUNet => "cpunet",
         }
     }
 }
@@ -219,7 +228,7 @@ pub mod as_core_arg {
                 Network::from_core_arg(s).map_err(|_| {
                     E::invalid_value(
                         serde::de::Unexpected::Str(s),
-                        &"bitcoin network encoded as a string (either main, test, testnet4, signet or regtest)",
+                        &"bitcoin network encoded as a string (either main, test, testnet4, signet, regtest or cpunet)",
                     )
                 })
             }
@@ -227,7 +236,7 @@ pub mod as_core_arg {
             fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
                 write!(
                     formatter,
-                    "bitcoin network encoded as a string (either main, test, testnet4, signet or regtest)"
+                    "bitcoin network encoded as a string (either main, test, testnet4, signet, regtest or cpunet)"
                 )
             }
         }
@@ -250,7 +259,9 @@ impl fmt::Display for ParseNetworkError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for ParseNetworkError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
 }
 
 impl FromStr for Network {
@@ -265,13 +276,16 @@ impl FromStr for Network {
             "testnet4" => Ok(Self::Testnet(TestnetVersion::V4)),
             "signet" => Ok(Self::Signet),
             "regtest" => Ok(Self::Regtest),
+            "cpunet" => Ok(Self::CPUNet),
             _ => Err(ParseNetworkError(InputString::from(s))),
         }
     }
 }
 
 impl AsRef<Self> for Network {
-    fn as_ref(&self) -> &Self { self }
+    fn as_ref(&self) -> &Self {
+        self
+    }
 }
 
 #[cfg(test)]
@@ -298,6 +312,7 @@ mod tests {
         assert_eq!("testnet4".parse::<Network>().unwrap(), Network::Testnet(TestnetVersion::V4));
         assert_eq!("regtest".parse::<Network>().unwrap(), Network::Regtest);
         assert_eq!("signet".parse::<Network>().unwrap(), Network::Signet);
+        assert_eq!("cpunet".parse::<Network>().unwrap(), Network::CPUNet);
         assert!("fakenet".parse::<Network>().is_err());
     }
 
@@ -314,6 +329,7 @@ mod tests {
             (Testnet(TestnetVersion::V4), "testnet4"),
             (Signet, "signet"),
             (Regtest, "regtest"),
+            (CPUNet, "cpunet"),
         ];
 
         for tc in tests {
@@ -336,6 +352,7 @@ mod tests {
             (Network::Testnet(TestnetVersion::V4), "testnet4"),
             (Network::Regtest, "regtest"),
             (Network::Signet, "signet"),
+            (Network::CPUNet, "cpunet"),
         ];
 
         for (net, core_arg) in &expected_pairs {

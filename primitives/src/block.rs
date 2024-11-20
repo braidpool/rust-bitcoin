@@ -11,6 +11,8 @@ use core::convert::Infallible;
 use core::fmt;
 #[cfg(feature = "alloc")]
 use core::marker::PhantomData;
+use std::println;
+use std::string::ToString;
 
 #[cfg(feature = "arbitrary")]
 use arbitrary::{Arbitrary, Unstructured};
@@ -113,11 +115,15 @@ impl Block<Unchecked> {
 
     /// Decomposes block into its constituent parts.
     #[inline]
-    pub fn into_parts(self) -> (Header, Vec<Transaction>) { (self.header, self.transactions) }
+    pub fn into_parts(self) -> (Header, Vec<Transaction>) {
+        (self.header, self.transactions)
+    }
 
     /// Returns the constituent parts of the block by reference.
     #[inline]
-    pub fn as_parts(&self) -> (&Header, &[Transaction]) { (&self.header, &self.transactions) }
+    pub fn as_parts(&self) -> (&Header, &[Transaction]) {
+        (&self.header, &self.transactions)
+    }
 
     /// Validates (or checks) a block.
     ///
@@ -216,37 +222,49 @@ impl Block<Unchecked> {
 impl Block<Checked> {
     /// Gets a reference to the block header.
     #[inline]
-    pub fn header(&self) -> &Header { &self.header }
+    pub fn header(&self) -> &Header {
+        &self.header
+    }
 
     /// Gets a reference to the block's list of transactions.
     #[inline]
-    pub fn transactions(&self) -> &[Transaction] { &self.transactions }
+    pub fn transactions(&self) -> &[Transaction] {
+        &self.transactions
+    }
 
     /// Returns the cached witness root if one is present.
     ///
     /// It is assumed that a block will have the witness root calculated and cached as part of the
     /// validation process.
     #[inline]
-    pub fn cached_witness_root(&self) -> Option<WitnessMerkleNode> { self.witness_root }
+    pub fn cached_witness_root(&self) -> Option<WitnessMerkleNode> {
+        self.witness_root
+    }
 }
 
 #[cfg(feature = "alloc")]
 impl<V: Validation> Block<V> {
     /// Returns the block hash.
     #[inline]
-    pub fn block_hash(&self) -> BlockHash { self.header.block_hash() }
+    pub fn block_hash(&self) -> BlockHash {
+        self.header.block_hash()
+    }
 }
 
 #[cfg(feature = "alloc")]
 impl From<Block> for BlockHash {
     #[inline]
-    fn from(block: Block) -> Self { block.block_hash() }
+    fn from(block: Block) -> Self {
+        block.block_hash()
+    }
 }
 
 #[cfg(feature = "alloc")]
 impl From<&Block> for BlockHash {
     #[inline]
-    fn from(block: &Block) -> Self { block.block_hash() }
+    fn from(block: &Block) -> Self {
+        block.block_hash()
+    }
 }
 
 /// Marker that the block's merkle root has been successfully validated.
@@ -329,7 +347,9 @@ impl Decoder for BlockDecoder {
     }
 
     #[inline]
-    fn read_limit(&self) -> usize { self.0.read_limit() }
+    fn read_limit(&self) -> usize {
+        self.0.read_limit()
+    }
 }
 
 #[cfg(feature = "alloc")]
@@ -347,7 +367,9 @@ pub struct BlockDecoderError(<BlockInnerDecoder as Decoder>::Error);
 
 #[cfg(feature = "alloc")]
 impl From<Infallible> for BlockDecoderError {
-    fn from(never: Infallible) -> Self { match never {} }
+    fn from(never: Infallible) -> Self {
+        match never {}
+    }
 }
 
 #[cfg(feature = "alloc")]
@@ -388,7 +410,9 @@ pub enum InvalidBlockError {
 
 #[cfg(feature = "alloc")]
 impl From<Infallible> for InvalidBlockError {
-    fn from(never: Infallible) -> Self { match never {} }
+    fn from(never: Infallible) -> Self {
+        match never {}
+    }
 }
 
 #[cfg(feature = "alloc")]
@@ -561,12 +585,16 @@ pub struct ParseHeaderError(crate::ParsePrimitiveError<Header>);
 
 #[cfg(all(feature = "hex", feature = "alloc"))]
 impl fmt::Debug for ParseHeaderError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { fmt::Debug::fmt(&self.0, f) }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Debug::fmt(&self.0, f)
+    }
 }
 
 #[cfg(all(feature = "hex", feature = "alloc"))]
 impl fmt::Display for ParseHeaderError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { fmt::Debug::fmt(&self, f) }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Debug::fmt(&self, f)
+    }
 }
 
 #[cfg(all(feature = "hex", feature = "alloc", feature = "std"))]
@@ -652,7 +680,9 @@ impl Decoder for HeaderDecoder {
     }
 
     #[inline]
-    fn read_limit(&self) -> usize { self.0.read_limit() }
+    fn read_limit(&self) -> usize {
+        self.0.read_limit()
+    }
 }
 
 #[cfg(feature = "alloc")]
@@ -691,7 +721,9 @@ pub enum HeaderDecoderError {
 
 #[cfg(feature = "alloc")]
 impl From<Infallible> for HeaderDecoderError {
-    fn from(never: Infallible) -> Self { match never {} }
+    fn from(never: Infallible) -> Self {
+        match never {}
+    }
 }
 
 #[cfg(feature = "alloc")]
@@ -725,12 +757,16 @@ impl std::error::Error for HeaderDecoderError {
 
 impl From<Header> for BlockHash {
     #[inline]
-    fn from(header: Header) -> Self { header.block_hash() }
+    fn from(header: Header) -> Self {
+        header.block_hash()
+    }
 }
 
 impl From<&Header> for BlockHash {
     #[inline]
-    fn from(header: &Header) -> Self { header.block_hash() }
+    fn from(header: &Header) -> Self {
+        header.block_hash()
+    }
 }
 
 /// Bitcoin block version number.
@@ -772,13 +808,17 @@ impl Version {
     ///
     /// This is the data type used in consensus code in Bitcoin Core.
     #[inline]
-    pub const fn from_consensus(v: i32) -> Self { Self(v) }
+    pub const fn from_consensus(v: i32) -> Self {
+        Self(v)
+    }
 
     /// Returns the inner `i32` value.
     ///
     /// This is the data type used in consensus code in Bitcoin Core.
     #[inline]
-    pub const fn to_consensus(self) -> i32 { self.0 }
+    pub const fn to_consensus(self) -> i32 {
+        self.0
+    }
 
     /// Checks whether the version number is signalling a soft fork at the given bit.
     ///
@@ -802,32 +842,44 @@ impl Version {
 
 impl fmt::Display for Version {
     #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { fmt::Display::fmt(&self.0, f) }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&self.0, f)
+    }
 }
 
 impl fmt::LowerHex for Version {
     #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::LowerHex::fmt(&self.0, f) }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::LowerHex::fmt(&self.0, f)
+    }
 }
 
 impl fmt::UpperHex for Version {
     #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::UpperHex::fmt(&self.0, f) }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::UpperHex::fmt(&self.0, f)
+    }
 }
 
 impl fmt::Octal for Version {
     #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::Octal::fmt(&self.0, f) }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Octal::fmt(&self.0, f)
+    }
 }
 
 impl fmt::Binary for Version {
     #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { fmt::Binary::fmt(&self.0, f) }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Binary::fmt(&self.0, f)
+    }
 }
 
 impl Default for Version {
     #[inline]
-    fn default() -> Self { Self::NO_SOFT_FORK_SIGNALLING }
+    fn default() -> Self {
+        Self::NO_SOFT_FORK_SIGNALLING
+    }
 }
 
 encoding::encoder_newtype_exact! {
@@ -849,11 +901,15 @@ pub struct VersionDecoder(encoding::ArrayDecoder<4>);
 
 impl VersionDecoder {
     /// Constructs a new [`Version`] decoder.
-    pub const fn new() -> Self { Self(encoding::ArrayDecoder::new()) }
+    pub const fn new() -> Self {
+        Self(encoding::ArrayDecoder::new())
+    }
 }
 
 impl Default for VersionDecoder {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl encoding::Decoder for VersionDecoder {
@@ -872,12 +928,16 @@ impl encoding::Decoder for VersionDecoder {
     }
 
     #[inline]
-    fn read_limit(&self) -> usize { self.0.read_limit() }
+    fn read_limit(&self) -> usize {
+        self.0.read_limit()
+    }
 }
 
 impl encoding::Decodable for Version {
     type Decoder = VersionDecoder;
-    fn decoder() -> Self::Decoder { VersionDecoder(encoding::ArrayDecoder::<4>::new()) }
+    fn decoder() -> Self::Decoder {
+        VersionDecoder(encoding::ArrayDecoder::<4>::new())
+    }
 }
 
 /// An error consensus decoding an `Version`.
@@ -885,7 +945,9 @@ impl encoding::Decodable for Version {
 pub struct VersionDecoderError(encoding::UnexpectedEofError);
 
 impl From<Infallible> for VersionDecoderError {
-    fn from(never: Infallible) -> Self { match never {} }
+    fn from(never: Infallible) -> Self {
+        match never {}
+    }
 }
 
 impl fmt::Display for VersionDecoderError {
@@ -896,7 +958,9 @@ impl fmt::Display for VersionDecoderError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for VersionDecoderError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { Some(&self.0) }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.0)
+    }
 }
 
 #[cfg(feature = "arbitrary")]

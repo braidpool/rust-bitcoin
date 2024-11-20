@@ -210,6 +210,7 @@ where
             break;
         }
     }
+    engine.input("cpunet\0".as_bytes()); 
     engine
 }
 

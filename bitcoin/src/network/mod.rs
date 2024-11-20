@@ -55,9 +55,13 @@ pub trait NetworkExt: sealed::Sealed {
 }
 
 impl NetworkExt for Network {
-    fn chain_hash(self) -> ChainHash { ChainHash::using_genesis_block_const(self) }
+    fn chain_hash(self) -> ChainHash {
+        ChainHash::using_genesis_block_const(self)
+    }
 
-    fn from_chain_hash(chain_hash: ChainHash) -> Option<Self> { Self::try_from(chain_hash).ok() }
+    fn from_chain_hash(chain_hash: ChainHash) -> Option<Self> {
+        Self::try_from(chain_hash).ok()
+    }
 
     /// Returns the associated network parameters.
     fn params(self) -> &'static Params {
@@ -68,6 +72,7 @@ impl NetworkExt for Network {
             Self::Testnet(_) => &Params::TESTNET3,
             Self::Signet => &Params::SIGNET,
             Self::Regtest => &Params::REGTEST,
+            Self::CPUNet => &Params::CPUNET,
         }
     }
 }
@@ -90,7 +95,9 @@ impl fmt::Display for UnknownChainHashError {
 
 #[cfg(feature = "std")]
 impl std::error::Error for UnknownChainHashError {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> { None }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
 }
 
 impl TryFrom<ChainHash> for Network {
@@ -104,6 +111,7 @@ impl TryFrom<ChainHash> for Network {
             ChainHash::TESTNET4 => Ok(Self::Testnet(TestnetVersion::V4)),
             ChainHash::SIGNET => Ok(Self::Signet),
             ChainHash::REGTEST => Ok(Self::Regtest),
+            ChainHash::CPUNET => Ok(Self::CPUNet),
             _ => Err(UnknownChainHashError(chain_hash)),
         }
     }
