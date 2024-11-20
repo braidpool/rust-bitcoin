@@ -234,7 +234,7 @@ pub mod as_core_arg {
                 Network::from_core_arg(s).map_err(|_| {
                     E::invalid_value(
                         serde::de::Unexpected::Str(s),
-                        &"bitcoin network encoded as a string (either main, test, testnet4, signet or regtest)",
+                        &"bitcoin network encoded as a string (either main, test, testnet4, signet, regtest, or cpunet)",
                     )
                 })
             }
@@ -242,7 +242,7 @@ pub mod as_core_arg {
             fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
                 write!(
                     formatter,
-                    "bitcoin network encoded as a string (either main, test, testnet4, signet or regtest)"
+                    "bitcoin network encoded as a string (either main, test, testnet4, signet, regtest or cpunet)"
                 )
             }
         }
