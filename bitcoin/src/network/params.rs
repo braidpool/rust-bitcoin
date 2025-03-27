@@ -67,6 +67,7 @@
 //! # }
 //! ```
 
+use primitives::Block;
 use units::{BlockHeight, BlockHeightInterval};
 
 use crate::network::Network;
@@ -254,11 +255,11 @@ impl Params {
     pub const CPUNET: Params = Params {
         network: Network::CPUNet,
         bip16_time: 1333238400, // Apr 1 2012
-        bip34_height: 1,
-        bip65_height: 1,
-        bip66_height: 1,
-        rule_change_activation_threshold: 1512, // 75%
-        miner_confirmation_window: 2016,
+        bip34_height: BlockHeight::from_u32(1),
+        bip65_height: BlockHeight::from_u32(1),
+        bip66_height: BlockHeight::from_u32(1),
+        rule_change_activation_threshold: BlockInterval::from_u32(1512), // 75%
+        miner_confirmation_window: BlockInterval::from_u32(2016),
         pow_limit: Target::MAX_ATTAINABLE_MAINNET,
         max_attainable_target: Target::MAX_ATTAINABLE_MAINNET,
         pow_target_spacing: 10 * 60,            // 10 minutes.

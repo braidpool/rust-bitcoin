@@ -195,7 +195,7 @@ pub fn genesis_block(params: impl AsRef<Params>) -> Block<Checked> {
                 bits: CompactTarget::from_consensus(0x1d00ffff),
                 nonce: 961348305
             }, transactions,
-        )
+        ).assume_checked(witness_root)
     }
 }
 
@@ -288,7 +288,6 @@ mod test {
     use crate::consensus::encode::serialize;
     use crate::network::params;
     use crate::Txid;
-    use crate::consensus::params;
 
     #[test]
     fn bitcoin_genesis_first_transaction() {
