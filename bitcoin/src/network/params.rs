@@ -74,7 +74,7 @@ use crate::network::Network;
 #[cfg(doc)]
 use crate::pow::CompactTarget;
 use crate::pow::Target;
-use crate::TestnetVersion;
+use crate::{BlockInterval, TestnetVersion};
 
 /// Parameters that influence chain consensus.
 #[non_exhaustive]
