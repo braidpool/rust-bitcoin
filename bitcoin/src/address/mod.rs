@@ -236,6 +236,8 @@ pub enum KnownHrp {
     Testnets,
     /// The regtest network.
     Regtest,
+    /// The CPUNet test network.
+    CPUNet
 }
 
 impl KnownHrp {
@@ -245,8 +247,9 @@ impl KnownHrp {
 
         match network {
             Bitcoin => Self::Mainnet,
-            Testnet(_) | Signet | CPUNet => Self::Testnets,
+            Testnet(_) | Signet => Self::Testnets,
             Regtest => Self::Regtest,
+            CPUNet => Self::CPUNet
         }
     }
 
@@ -258,6 +261,8 @@ impl KnownHrp {
             Ok(Self::Testnets)
         } else if hrp == bech32::hrp::BCRT {
             Ok(Self::Regtest)
+        } else if hrp == bech32::hrp::TC {
+            Ok(Self::CPUNet)
         } else {
             Err(UnknownHrpError(hrp.to_lowercase()))
         }
@@ -269,6 +274,7 @@ impl KnownHrp {
             Self::Mainnet => bech32::hrp::BC,
             Self::Testnets => bech32::hrp::TB,
             Self::Regtest => bech32::hrp::BCRT,
+            Self::CPUNet => bech32::hrp::TC
         }
     }
 }
@@ -283,6 +289,7 @@ impl From<KnownHrp> for NetworkKind {
             KnownHrp::Mainnet => NetworkKind::Main,
             KnownHrp::Testnets => NetworkKind::Test,
             KnownHrp::Regtest => NetworkKind::Test,
+            KnownHrp::CPUNet => NetworkKind::Test,
         }
     }
 }
@@ -990,7 +997,7 @@ impl<U: NetworkValidationUnchecked> FromStr for Address<U> {
     type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, ParseError> {
-        if ["bc1", "bcrt1", "tb1"].iter().any(|&prefix| s.to_lowercase().starts_with(prefix)) {
+        if ["bc1", "bcrt1", "tb1", "tc1"].iter().any(|&prefix| s.to_lowercase().starts_with(prefix)) {
             let address = Address::from_bech32_str(s)?;
             // We know that `U` is only ever `NetworkUnchecked` but the compiler does not.
             Ok(Address::from_inner(address.into_inner()))
