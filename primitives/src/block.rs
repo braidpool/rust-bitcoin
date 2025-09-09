@@ -196,13 +196,13 @@ impl Header {
     // This is the same as `Encodable` but done manually because `Encodable` isn't in `primitives`.
     pub fn block_hash(&self) -> BlockHash {
         let mut engine = sha256d::Hash::engine();
-        engine.input("cpunet\0".as_bytes());
         engine.input(&self.version.to_consensus().to_le_bytes());
         engine.input(self.prev_blockhash.as_byte_array());
         engine.input(self.merkle_root.as_byte_array());
         engine.input(&self.time.to_u32().to_le_bytes());
         engine.input(&self.bits.to_consensus().to_le_bytes());
         engine.input(&self.nonce.to_le_bytes());
+        engine.input("cpunet\0".as_bytes());
 
         BlockHash::from_byte_array(sha256d::Hash::from_engine(engine).to_byte_array())
     }
