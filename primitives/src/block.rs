@@ -10,6 +10,7 @@
 use core::fmt;
 #[cfg(feature = "alloc")]
 use core::marker::PhantomData;
+use std::io::Write;
 
 #[cfg(feature = "arbitrary")]
 use arbitrary::{Arbitrary, Unstructured};
@@ -92,44 +93,58 @@ impl Block<Unchecked> {
 
     /// Decomposes block into its constituent parts.
     #[inline]
-    pub fn into_parts(self) -> (Header, Vec<Transaction>) { (self.header, self.transactions) }
+    pub fn into_parts(self) -> (Header, Vec<Transaction>) {
+        (self.header, self.transactions)
+    }
 }
 
 #[cfg(feature = "alloc")]
 impl Block<Checked> {
     /// Gets a reference to the block header.
     #[inline]
-    pub fn header(&self) -> &Header { &self.header }
+    pub fn header(&self) -> &Header {
+        &self.header
+    }
 
     /// Gets a reference to the block's list of transactions.
     #[inline]
-    pub fn transactions(&self) -> &[Transaction] { &self.transactions }
+    pub fn transactions(&self) -> &[Transaction] {
+        &self.transactions
+    }
 
     /// Returns the cached witness root if one is present.
     ///
     /// It is assumed that a block will have the witness root calculated and cached as part of the
     /// validation process.
     #[inline]
-    pub fn cached_witness_root(&self) -> Option<WitnessMerkleNode> { self.witness_root }
+    pub fn cached_witness_root(&self) -> Option<WitnessMerkleNode> {
+        self.witness_root
+    }
 }
 
 #[cfg(feature = "alloc")]
 impl<V: Validation> Block<V> {
     /// Returns the block hash.
     #[inline]
-    pub fn block_hash(&self) -> BlockHash { self.header.block_hash() }
+    pub fn block_hash(&self) -> BlockHash {
+        self.header.block_hash()
+    }
 }
 
 #[cfg(feature = "alloc")]
 impl From<Block> for BlockHash {
     #[inline]
-    fn from(block: Block) -> BlockHash { block.block_hash() }
+    fn from(block: Block) -> BlockHash {
+        block.block_hash()
+    }
 }
 
 #[cfg(feature = "alloc")]
 impl From<&Block> for BlockHash {
     #[inline]
-    fn from(block: &Block) -> BlockHash { block.block_hash() }
+    fn from(block: &Block) -> BlockHash {
+        block.block_hash()
+    }
 }
 
 /// Marker that the block's merkle root has been successfully validated.
@@ -202,8 +217,24 @@ impl Header {
         engine.input(&self.time.to_u32().to_le_bytes());
         engine.input(&self.bits.to_consensus().to_le_bytes());
         engine.input(&self.nonce.to_le_bytes());
-        engine.input("cpunet\0".as_bytes());
-
+        engine.input("cpunet\0\0".as_bytes());
+        let raw_bytes = "cpunet\0\0".as_bytes();
+        let hex_cpunet_string: String =
+            hex::BytesToHexIter::new(raw_bytes.iter(), hex::Case::Lower).collect();
+        println!("CPUNET RAW BYTES - {:?}", hex_cpunet_string);
+        let preimage_bytes = [
+            &self.version.to_consensus().to_le_bytes()[..],
+            &self.prev_blockhash.as_byte_array()[..],
+            &self.merkle_root.as_byte_array()[..],
+            &self.time.to_u32().to_le_bytes()[..],
+            &self.bits.to_consensus().to_le_bytes()[..],
+            &self.nonce.to_le_bytes()[..],
+            &raw_bytes[..],
+        ]
+        .concat();
+        let hex_preimage_string: String =
+            hex::BytesToHexIter::new(preimage_bytes.iter(), hex::Case::Lower).collect();
+        println!("PREIMAGE RAW BYTES - {:?}", hex_preimage_string);
         BlockHash::from_byte_array(sha256d::Hash::from_engine(engine).to_byte_array())
     }
 }
@@ -246,12 +277,16 @@ impl fmt::Debug for Header {
 
 impl From<Header> for BlockHash {
     #[inline]
-    fn from(header: Header) -> BlockHash { header.block_hash() }
+    fn from(header: Header) -> BlockHash {
+        header.block_hash()
+    }
 }
 
 impl From<&Header> for BlockHash {
     #[inline]
-    fn from(header: &Header) -> BlockHash { header.block_hash() }
+    fn from(header: &Header) -> BlockHash {
+        header.block_hash()
+    }
 }
 
 /// Bitcoin block version number.
@@ -293,13 +328,17 @@ impl Version {
     ///
     /// This is the data type used in consensus code in Bitcoin Core.
     #[inline]
-    pub const fn from_consensus(v: i32) -> Self { Version(v) }
+    pub const fn from_consensus(v: i32) -> Self {
+        Version(v)
+    }
 
     /// Returns the inner `i32` value.
     ///
     /// This is the data type used in consensus code in Bitcoin Core.
     #[inline]
-    pub fn to_consensus(self) -> i32 { self.0 }
+    pub fn to_consensus(self) -> i32 {
+        self.0
+    }
 
     /// Checks whether the version number is signalling a soft fork at the given bit.
     ///
@@ -323,7 +362,9 @@ impl Version {
 
 impl Default for Version {
     #[inline]
-    fn default() -> Version { Self::NO_SOFT_FORK_SIGNALLING }
+    fn default() -> Version {
+        Self::NO_SOFT_FORK_SIGNALLING
+    }
 }
 
 hashes::hash_newtype! {
@@ -583,7 +624,8 @@ mod tests {
         );
         assert_eq!(want.len(), 160);
         assert_eq!(format!("{}", header), want);
-
+        println!("HEADER RAW HEX - {:?}", header.to_string());
+        println!("HEADER HASH - {:?}", header.block_hash());
         // Check how formatting options are handled.
         let want = format!("{:.20}", want);
         let got = format!("{:.20}", header);
